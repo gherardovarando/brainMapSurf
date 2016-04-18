@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="HandheldFriendly" content="true" >
+	<meta name="apple-mobile-web-app-capable" content="yes" >
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" >
+	<meta name=”viewport” content=”width=device-width, user-scalable=0, minimal-ui”>
+	<meta name="apple-mobile-web-app-title" content="brainMapSurf">
+	<meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui" >
+
+	<!-- icons and startup images-->
+	<link rel="apple-touch-icon" href="images/logo.png">
+	<link href="images/startup-image320x460.png"
+				media="(device-width: 320px) and (device-height: 480px)
+							and (-webkit-device-pixel-ratio: 1)"
+				rel="apple-touch-startup-image">
+
+	<title>brainMapSurf</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<!-- Leaflet -->
+	<link rel="stylesheet" href="style/leaflet.css">
+	<script  src="js/leaflet.js"></script>
+
+
+<!-- Leaflet.sidebar -->
+<link rel="stylesheet" href="style/L.Control.Sidebar2.css">
+<script src="js/L.Control.Sidebar.js"></script>
+
+<!-- graticule for leaflet-->
+<link rel="stylesheet" href="style/L.SimpleGraticule.css">
+<script async src="js/L.SimpleGraticule.js"></script>
+
+
+	<!-- Easy button leaflet -->
+	<link rel="stylesheet" href="style/easy-button.css">
+	<script src="js/easy-button.js"></script>
+
+
+   <!-- lealfet.contextmenu -->
+	<link rel="stylesheet" href="style/leaflet.contextmenu.css" >
+	<script src="js/leaflet.contextmenu.js"></script>
+
+	<!-- Leaflet.Draw  (is min)-->
+	<link rel="stylesheet" href="style/leaflet.draw.css">
+	<script src="js/leaflet.draw.js"></script>
+
+	<!-- D3 (needded for leaflet.freeDraw) -->
+	<script src="js/d3.min.js"></script>
+
+	<!-- jsClipper (needed for leaflet.freeDraw)-->
+	<script src="js/clipper.js"></script>
+
+	<!-- leaflet.freeDraw  (with drawnItems layer option)-->
+	<script src="js/leaflet.freedraw-src.js"></script>
+
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="js/jquery.min.js"></script>
+
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+   <script src="js/bootstrap.min.js"></script>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="style/css/bootstrap.min.css">
+
+	<!-- Optional theme
+	<link rel="stylesheet" href="style/css/bootstrap-theme.min.css"> -->
+
+	<!-- font awesome icons-->
+	<link rel="stylesheet" href="style/font-awesome-4.5.0/css/font-awesome.min.css">
+
+
+<script src="js/papaparse.min.js"></script>
+<style>
+body {
+			font-size: 20px;
+		}
+.disable-inline-text {
+  opacity: 0.5;
+	line-height: 2.5;
+}
+.enabled-inline-text{
+	opacity: 1;
+	color: #428bca;
+	line-height: 2.5;
+}
+.action-inline-text{
+	opacity: 0.8;
+	line-height: 2.5;
+}
+.disable-inline-text:hover {
+    color: #428bca;
+}
+.navbar-collapse.collapse {
+display: block!important;
+
+}
+
+.navbar-nav>li, .navbar-nav {
+float: left !important;
+}
+
+hr {
+color: #292929;
+background-color: #292929;
+height: 1px;
+}
+
+table.table-custom{
+	width:80%;
+	padding-left: 50px;
+}
+
+div#map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, .25);
+}
+
+div.leaflet-draw {
+    padding-top: 40px;
+    position: relative;
+    z-index: 1001;
+}
+
+.badge-notify{
+   background:#428bca;
+   position:absolute;
+   top:0px;
+ 	 right:2px;
+	 opacity: 1;
+	-webkit-transition: opacity 0.7s ease-in-out;
+  -moz-transition: opacity 0.7s ease-in-out;
+  -ms-transition: opacity 0.7s ease-in-out;
+  -o-transition: opacity 0.7s ease-in-out;
+  transition: opacity 0.7s ease-in-out;
+  }
+
+.badge-notify.inv{
+	opacity:0;
+
+}
+
+div#map svg.tracer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+svg.tracer {
+    pointer-events: none;
+}
+
+ div#map.mode-create {
+    cursor: crosshair;
+}
+
+
+</style>
+</head>
+
+
+
+<body>
+	<div id="sidebar" class="panel main-sidebar">
+
+		<nav class="navbar navbar-default  head-sidebar " >
+  <div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand"   href="#" role="button" onclick="	$('#welcomModal').modal('toggle');" title="brainMapSurf">
+				<img src="images/logo.jpg" alt="Computational Intelligence Group" style="width:18px;"> </a>
+			<ul class="nav navbar-nav">
+
+		<li id="setButton"> <a   href="#" role="button" onclick="setting();"  title="settings">
+				<span class="glyphicon glyphicon-cog" aria-hidden="true" ></span>
+				</a></li>
+					<li id="homeButton"> <a    href="#" role="button" onclick="home(); "  title="regions">
+							<span class="glyphicon glyphicon-dashboard" aria-hidden="true" ></span>
+						</a>  <span class="badge badge-notify hide" id="region-badge">0</span></li>
+
+
+		<li id="changeButton">
+			<a   href="#"  role="button" onclick="change();" id="map_menu" title="change map">
+				Map </a>
+		</li>
+	</ul>
+
+	</div>
+
+  </div><!-- /.container-fluid -->
+</nav>
+
+		<div  id="progress">
+	</div>
+	<div class="row" style="padding:5px">
+
+	</div>
+
+
+
+
+<div class="sidebar-body">
+
+	<!-- Settings -->
+	<div class="element-sidebar-inactive"  id="settingBody" >
+
+			<div  id="map-settingBody">
+
+			<div class="enabled-inline-text" id="toggleComputationButton"
+			role="button" onclick="toggleComputation(brainmap)" title="enable automatic computations of region statistics, use workers if available" >
+			<i class="fa fa-cogs fa-lg"></i>&nbsp&nbsp&nbsp Region stats </div>
+
+			<div class="enabled-inline-text" id="toggleUnbiasedDensityButton"
+			role="button" onclick="toggleUnbiasedDensity(brainmap)" title="use unbiased (stereological) density estimation" >
+			<i class="fa fa-dot-circle-o  fa-lg"></i>&nbsp&nbsp&nbsp Unbiased density </div>
+
+				<div class="enabled-inline-text" id="toggleLocalStorageButton"
+					role="button" onclick="toggleLocalStorage(brainmap)" title="enable local storage capabilities to save elements">
+					<i class="fa fa-database fa-lg"></i>&nbsp&nbsp&nbsp  Local storage</div>
+
+						<div class="disable-inline-text"  id="toggleGridButton"
+							role="button" onclick="toggleGrid(brainmap);" title="display a grid on the map (!!unstable!!)">
+							<i class="fa fa-plus-square-o fa-lg" > </i>
+							  &nbsp  &nbsp Grid (beta)</div>
+
+							<div class="enabled-inline-text"  id="toggleAlertButton"
+							role="button" onclick="toggleAlert(brainmap);" title="display alerts on the bottom left corner" >
+							<i class="fa fa-warning fa-lg"	> </i>   &nbsp  &nbsp Alerts</div>
+<hr> </hr>
+<div  class="action-inline-text" role="button"  data-toggle="modal" data-target="#infoModal" title="current map extended info">
+	<i class="fa fa-file fa-lg"></i>&nbsp&nbsp&nbsp Configmap </div>  </div>
+
+							<div  class="action-inline-text" role="button"  data-toggle="modal" data-target="#aboutModal" title="about brainMapSurf">
+								<i class="fa fa-newspaper-o fa-lg"></i>&nbsp&nbsp&nbsp About </div>
+								</div>
+
+
+
+	<!--<div> Choose region color <input type="color" onclick="" value="#D12018" id="color_chooser"></div>-->
+
+<!-- map chooser panel -->
+	<div class="element-sidebar-inactive" id="changeBody">
+		<div id="map_chooser" class="list-group">
+	</div>
+	</div>
+
+
+<!-- home/region panel -->
+	<div class="element-sidebar-inactive" id="homeBody"  >
+	<table class="table-custom" id="polygonsInfo" >
+		<tr id="headpolygoninfo">
+			<th> id </th>
+			<th> density   </th>
+			<th>           </th>
+		</tr>
+	</table>
+	</div>
+
+</div>
+
+	</div>
+
+	<!-- Map  !-->
+	<div id="map" style="z-index:0; width:100%; height:100%; position:absolute;">
+
+		<div class="col-lg-10" id="alerts-container" style="position:absolute;
+		z-index:1; right:0px; bottom: 0px; width: 250px;padding:20px;">
+			<div class="alert alert-success fade in"  id="alert-bottom">
+				<strong id="alert-bottom-strong">Welcome!</strong>
+					<p id="alert-bottom-body"> PSDsurf seems to work </p>
+					</div>
+				</div>
+
+				</div>
+
+	<!-- About modal  !-->
+	<div class="modal fade" id="aboutModal" tabindex="-1" role="dialog" aria-labelledby="aboutModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="aboutModalLabel">About brainMapSurf</h4>
+	      </div>
+	      <div class="modal-body">
+
+					<h5>Copyright (C) 2016  Gherardo Varando <a href="mailto:gherardo.varando@gmail.com">
+								<span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> </a>, Concha Bielza
+                 and Pedro Larrañaga </h5>
+					<p>
+
+                 <a href="http://cig.fi.upm.es">
+                                     <img src="images/logo_highq.png",
+                                          style="float:right;height:90px">
+																				</a>
+					</p>
+         <p>This program comes with ABSOLUTELY NO WARRANTY </p>
+				<p>This is free software, and you are welcome to redistribute it
+            under certain conditions.
+          <a href="http://www.gnu.org/licenses/gpl.html">
+                 "For details see the General Public License</a> </p>
+				<p> This software is been developed with the economic support of the Cajal Blue Brain Project </p>
+				<div id="aboutStatus">
+				</div>
+	      </div>
+
+	    <!--  <div class="modal-footer">
+			</div> -->
+	    </div>
+	  </div>
+	</div>
+
+	<!-- map Info modal  !-->
+	<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times; </span></button>
+					<h2 class="modal-title" id="infoModalLabel">Map info</h2>
+				</div>
+				<div class="modal-body" id="infomodal_body">
+
+				</div>
+				<!--		<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div>  -->
+			</div>
+		</div>
+	</div>
+
+	<!-- app welcom modal -->
+	<div class="modal fade" id="welcomModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times; </span></button>
+					<h2 class="modal-title">brainMapSurf</h2>
+				</div>
+				<div class="modal-body">
+        <h3> Welcome to brainMapSurf </h3>
+				<h4 class="alert-info">press F11 for fullscreen experience  </h4>
+				<h4 class="alert-success">NEW Use now right click on regions and map for quick access to actions  </h4>
+				<h4> You can use the menu in the lef up corner for selecting differents maps</h4>
+				<h4> To change settings press <i class="glyphicon glyphicon-cog"></i></h4>
+				<h4> Draw polygonal areas with the drawing tools in the left bottom corner</h4>
+				<h4> Visualize the computed polygons by pressing <i class="glyphicon glyphicon-dashboard"></i></h4>
+				<h5> This application is been developed by the <a href="http://cig.fi.upm.es" target="new">
+					Computational Intelligence Group</a> (<a href="www.upm.es" target="new">UPM</a>) with the economic support of the
+					Spanish Minister of Economy through the  <a href="http://cajalbbp.cesvima.upm.es/#home" target="new">Cajal Blue Brain Project</a>. </h5>
+					<img src="images/logo_highq.png" alt="Computational Intelligence Group" style="width:30px;">
+					<img src="images/cajaltrasp.png" alt="Cajal Blue Brain Project" style="width:80px;">
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<!-- local storage modal -->
+	<div class="modal fade" id="localStorageModal" tabindex="-1" role="dialog" aria-labelledby="localStorageModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times; </span></button>
+					<h2 class="modal-title">Local Storage</h2>
+				</div>
+				<div class="modal-body">
+				<h3> Select locally saved regions </h3>
+				<h5> Region 1...load <i class="fa fa-cog fa-spin"></i>
+ </h5>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+<script src="js/elementshtml.js"></script>
+<script src="js/brainMap.js"></script>
+<script src="js/parsing.js"></script>
+<script src="js/callbackcontextmenu.js"></script>
+
+	<script>
+
+
+  var map = L.map('map',{minZoom:0,
+		  crs: L.CRS.Simple,
+			zoomControl: false,
+			 maxBounds: [[60,-60],[-280,280]],
+			contextmenu: true,
+    contextmenuWidth: 140,
+    contextmenuItems: [{
+        text: 'Coordinates',
+				iconCls: "fa fa-bookmark-o",
+        callback: showCoordinates
+    }, {
+        text: 'Center map here',
+				iconCls: "fa fa-crosshairs",
+        callback: centerMap
+    },
+		{
+			text: "Upload JSON",
+			iconCls: "fa fa-upload",
+			callback: function(){brainmap.uplaodJSON();}
+		}, '-', {
+        text: 'Zoom in',
+        iconCls: "fa fa-plus-square",
+        callback: zoomIn
+    }, {
+        text: 'Zoom out',
+				iconCls: "fa fa-minus-square",
+        callback: zoomOut
+    }]
+			}).setView([-100,100],1);
+
+
+	var sidebar = L.control.sidebar('sidebar', {
+			position: 'left',
+			closeButton: false,
+			autoPan:false
+		});
+
+	setTimeout(function () {
+    sidebar.minimize();
+}, 500);
+ //L.control.zoom({position:"topright"}).addTo(map);
+
+
+  var brainmap=new brainMap("map",map,sidebar);
+
+
+	changeMap=function(name){
+		sidebar.minimize();
+		document.getElementById("changeButton").setAttribute("class","inactive");
+		menu.active="none";
+		densityOk();
+		configOk();
+		brainmap.updateMapInfo({name: name});
+    fun=function(info){brainmap.autobuild(info); warningNote(info.note)}
+		errFun=function(){brainmap.autobuild(); configError();}
+		readMapConfig(brainmap.guessConfigUrl(),fun,errFun);
+   if (name.length>15){
+		var n=name.slice(0,10)+"...";
+	}
+	else{
+		var n=name;
+	}
+   document.getElementById("map_menu").innerHTML=n;
+	}
+
+
+	$('#welcomModal').modal('toggle');
+	readMapList();
+  changeMap("HCID7_Grey");
+  toggleAlert(brainmap);
+  setTimeout(function(){
+		localStorageCheck(2000);},2500)
+		setTimeout(function(){
+			workerCheck(2000);},2500)
+	setTimeout(closeAlertBottom, 2000);
+
+
+
+
+	</script>
+</body>
+</html>
