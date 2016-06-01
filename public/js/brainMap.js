@@ -503,16 +503,45 @@ this.uplaodJSON = function(){
      var holescal=this.getHolescal(polygon);
      var densityTot=this.getDensity(polygon);
      var densityH=this.getDensityH(polygon);
-     var temp=document.createElement("P");
-     temp.innerHTML="internal point: "+point;
-     var volumT=document.createElement("P");
-     volumT.innerHTML="volume: " + volcal +volunit;
+
+
+     var list = document.createElement("UL");
+     list.className="list-group";
+
+     var pointT=document.createElement("LI");
+     pointT.className="list-group-item";
+     pointT.innerHTML="Total number of puncta: "+ point;
+
+     var volumT=document.createElement("H2");
+     volumT.className="list-group-item-heading";
+     volumT.innerHTML="Volume examined: " + volcal.toFixed(2) + volunit;
+
      var holesT=document.createElement("P");
-     holesT.innerHTML="holes: " + holescal +volunit;
-     var densityT=document.createElement("P");
-     densityT.innerHTML="total density: " + densityTot ;
-     var densityTH=document.createElement("P");
-     densityTH.innerHTML="Neuropiplum density: " + densityH ;
+     holesT.className="list-group-item-text";
+     holesT.innerHTML="Holes: " + holescal.toFixed(2) + volunit;
+     var neuropilT=document.createElement("P");
+     neuropilT.className="list-group-item-text";
+     neuropilT.innerHTML="Neuropil: " + (volcal-holescal).toFixed(2) + volunit;
+
+     var contVolT=document.createElement("LI");
+     contVolT.className="list-group-item";
+     contVolT.appendChild(volumT);
+     contVolT.appendChild(holesT);
+     contVolT.appendChild(neuropilT);
+
+     //density
+     var densityT=document.createElement("LI");
+     densityT.className="list-group-item";
+     densityT.innerHTML="Density of puncta: " + densityTot.toFixed(2) + "  puncta /"+volunit  ;
+     var densityTH=document.createElement("LI");
+     densityTH.className="list-group-item";
+     densityTH.innerHTML="Denisty of puncta in neuropil: " + densityH.toFixed(2) + "  puncta /"+volunit ;
+
+     list.appendChild(contVolT);
+     list.appendChild(pointT);
+     list.appendChild(densityT);
+     list.appendChild(densityTH);
+
      var polygonToDownload={
        area_px : polygon.area_px,
        holes_vx : polygon.holes_vx,
@@ -564,9 +593,8 @@ this.uplaodJSON = function(){
 
 
      if (document.getElementById(polygon.bmId+"-body")){
-     document.getElementById(polygon.bmId+"-body").appendChild(temp)
-     .appendChild(volumT).appendChild(holesT).appendChild(densityT)
-     .appendChild(densityTH).appendChild(contDown);
+     document.getElementById(polygon.bmId+"-body").appendChild(list)
+     document.getElementById(polygon.bmId+"-body").appendChild(contDown);
       }
      addPolInfoEl(polygon.bmId,[densityH.toPrecision(3)],
      "fa fa-file",[{att:"role",vAt:"button"}]);
@@ -692,7 +720,7 @@ this.uplaodJSON = function(){
 
     //create the polygon info modal and add it to the DOM
     if (document){
-   polygon.modal=newModal(polygon.bmId,"polygon "+polygon.bmId);
+   polygon.modal=newModal(polygon.bmId,"Area "+polygon.bmId);
    document.getElementsByTagName("BODY")[0].appendChild(self.polygons[self.polygons.length-1].modal);
     }
 
@@ -721,11 +749,11 @@ this.uplaodJSON = function(){
         callback: function(){self.computeDensity(polygon)}
     }, '-', {
         text: "Results csv",
-        iconCls: 'fa fa-download',
+        iconCls: 'fa fa-file-text-o',
         callback: function(){self.downloadRegionsCSV([polygon]);}
     }, {
         text: 'JSON',
-        iconCls: 'fa fa-file-text-o',
+        iconCls: 'fa fa-download',
         callback: function(){self.downloadRegionsJSON(polygon);}
     }]
 });
