@@ -126,7 +126,6 @@ function pointinpolygon (point, polygon) {
       if (poly.getLatLngs){ //if it is a polygon, avoid markers and others.
       self.addPolygon(poly);
       self.state.unClickable=false; //enable the click options over polygons
-
       }
     })
     this.drawnItems=drawnItems;
@@ -168,19 +167,24 @@ this.inintialiseDrawControls=function(){
   this.map.addControl(drawControl);
 
   //define actions on events listener
-
   //on the creation of a new item
   this.map.on('draw:created', function (e) {
     self.state.unClickable=false;
     self.map.dragging.enable();
+    if (self.freeDraw){
+    self.freeDraw.setMode(L.FreeDraw.MODES.VIEW);
+    }
   var type = e.layerType,
       layer = e.layer;
   self.drawnItems.addLayer(layer);
   });
 
-
+//on edit
   this.map.on('draw:edited', function (e) {
   var layers = e.layers;
+  if (self.freeDraw){
+  self.freeDraw.setMode(L.FreeDraw.MODES.VIEW);
+  }
   layers.eachLayer(function (layer) {
   self.computeDensity(layer);
   });
@@ -189,6 +193,9 @@ this.inintialiseDrawControls=function(){
 // where items are removed
 this.map.on('draw:deleted', function (e) {
 var layers = e.layers;
+if (self.freeDraw){
+self.freeDraw.setMode(L.FreeDraw.MODES.VIEW);
+}
 layers.eachLayer(function (layer) {
   self.deletePolygon(layer,self.drawnItems);
 });
@@ -459,6 +466,10 @@ this.uplaodJSON = function(){
   var jsonString=reader.result;
   var pol=JSON.parse(jsonString);
   self.drawnItems.addLayer(L.polygon(pol.latlngs,{color: "#802000"}));
+  self.polygons[self.polygons.length-1].area_px = pol.area_px;
+  self.polygons[self.polygons.length-1].holes_vx = pol.holes_vx;
+  self.polygons[self.polygons.length-1].points = pol.points;
+  self.showInfoPolygon(self.polygons[self.polygons.length-1]);
 }
  }
 
@@ -688,16 +699,8 @@ this.uplaodJSON = function(){
     }
 
 
-    //define the onCLick function for the polygon
-   function onClickPolygon(e){
-     if (document){
-       if (self.state.unClickable){
-         return;
-       }
-       //this.showInfoPolygon(e.target);
-       $('#'+e.target.bmId).modal('toggle');
-   }
-   };
+
+
 
 
 
@@ -760,6 +763,17 @@ this.uplaodJSON = function(){
 
 
 // set onclick function
+
+//define the onCLick function for the polygon
+function onClickPolygon(e){
+ if (document){
+   if (self.state.unClickable){
+     return;
+   }
+   //this.showInfoPolygon(e.target);
+   $('#'+e.target.bmId).modal('toggle');
+}
+};
     polygon.on("click",onClickPolygon);
 
 
@@ -874,14 +888,22 @@ this.uplaodJSON = function(){
 
   //add the layer controls
   this.addControls=function(){
-    var baseMap={};
+    var baseMaps={};
+    var overlayMaps = {};
     if (this.holesLayer){
-    baseMap["Neuropilum"]=this.holesLayer;
+    overlayMaps["Neuropilum"]=this.holesLayer;
+  }
+  if (this.heatMap){
+    overlayMaps["HeatMap"]=this.heatMap;
   }
    if (this.drawnItems){
-     baseMap["Regions"]=this.drawnItems;
+     overlayMaps["Regions"]=this.drawnItems;
    }
-   this.controls =	L.control.layers(null,baseMap,{position:"bottomleft"});
+   if (this.markerClusterGroup){
+     overlayMaps["Markers"]=this.markerClusterGroup;
+   }
+
+   this.controls =	L.control.layers(baseMaps,overlayMaps,{position:"bottomleft", autoZIndex:false});
    this.controls.addTo(this.map);
    var self=this;
    this.map.on("overlayadd",function(e){
@@ -916,15 +938,86 @@ this.uplaodJSON = function(){
   }
 
 
+  this.initialiseMarkerCluster=function(){
+    var markers = L.markerClusterGroup();
+    this.markerClusterGroup=markers;
+    this.map.addLayer(markers);
+  }
+
+  this.clearMarkers=function(){
+    if (this.markerClusterGroup){
+      this.markerClusterGroup.clearLayers();
+    //this.map.removeLayer(this.markerClusterGroup);
+  }
+  }
+
+  this.addMarkersOf=function(e){
+    this.clearMarkers();
+    var self=this;
+    var ref=this.getReferences(L.latLngBounds(e.latlng,e.latlng));
+    readPoints(null,ref[0],function(useless){
+    },null,self,function(latlng,self,numberPoint){
+      if (!latlng.some(isNaN)){
+      self.markerClusterGroup.addLayer(L.circleMarker(latlng));}
+    })
+  }
+
+
+  this.initialiseHeatMap=function(){
+    this.heatMap = L.heatLayer([[1000,1000]],{radius: 8, minOpacity: 20, maxZoom:0})
+    //this.map.addLayer(this.heatMap);
+  }
+
+
+
+  this.clearHeatMap=function(){
+    if (this.heatMap){
+    this.heatMap.setLatLngs([[1000,1000]]);
+    this.map.removeLayer(this.heatMap);
+  }
+  }
+
+  this.heatMapHere=function(e){
+    var self=this;
+    var ref=this.getReferences(L.latLngBounds(e.latlng,e.latlng));
+    readPoints(null,ref[0],function(useless){
+      self.heatMap.redraw();
+      self.map.addLayer(self.heatMap);
+      //self.map.addLayer(L.heatLayer(self.tempPoints.slice(0,self.tempPoints.length-1),{radius: 5, minOpacity: 70}));
+      //self.map.addLayer(L.heatLayer([[0,0,10],[200,200,10]],{radius: 10}));
+    },null,self,function(latlng,self){
+      if (!latlng.some(isNaN)){
+      self.heatMap.addLatLng(latlng);}
+    })
+  }
+
+
+  this.heatMapAll=function(){
+    var n = this.dim_px/1024;
+    var delta = 255/n;
+    for (var i=0+delta; i<256 ; i=i+delta ){
+      for (var j=0+delta; j<256 ; j=j+delta ){
+        this.heatMapHere({latlng:[-i,j]});
+      }
+    }
+  }
+
+
+
+
 
   this.autobuild=function(info){
+    this.clearMarkers();
     this.clearPolygons();
 		this.removeControls();
 		this.removeLayer();
+    this.clearHeatMap();
 		this.initialiseEmptyConfig();
     this.updateMapInfo(info);
     this.addToMap();
     this.addHolesLayer();
+    this.initialiseMarkerCluster();
+    this.initialiseHeatMap();
     this.addControls();
     this.updateInfoSections();
     this.map.setView([-100,100],1);

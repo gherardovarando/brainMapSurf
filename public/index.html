@@ -9,12 +9,13 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" >
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" >
+
 	<meta name=”viewport” content=”width=device-width, user-scalable=0, minimal-ui”>
 	<meta name="apple-mobile-web-app-title" content="brainMapSurf">
 	<meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui" >
 
 	<!-- icons and startup images-->
-	<link rel="apple-touch-icon" href="images/logo.png">
+	<link type="text/css" rel="apple-touch-icon" href="images/logo.png">
 	<link href="images/startup-image320x460.png"
 				media="(device-width: 320px) and (device-height: 480px)
 							and (-webkit-device-pixel-ratio: 1)"
@@ -24,30 +25,37 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 	<!-- Leaflet -->
-	<link rel="stylesheet" href="style/leaflet.css">
+	<link type="text/css" rel="stylesheet" href="style/leaflet.css">
 	<script  src="js/leaflet.js"></script>
 
 
 <!-- Leaflet.sidebar -->
-<link rel="stylesheet" href="style/L.Control.Sidebar2.css">
+<link type="text/css" rel="stylesheet" href="style/L.Control.Sidebar2.css">
 <script src="js/L.Control.Sidebar.js"></script>
 
 <!-- graticule for leaflet-->
-<link rel="stylesheet" href="style/L.SimpleGraticule.css">
+<link type="text/css" rel="stylesheet" href="style/L.SimpleGraticule.css">
 <script async src="js/L.SimpleGraticule.js"></script>
 
+<!--Leaflet markercluster -->
+<link type="text/css" rel="stylesheet" href="style/MarkerCluster.css">
+<link type="text/css" rel="stylesheet" href="style/MarkerCluster.Default.css">
+<script async src="js/leaflet.markercluster.js"></script>
+
+<!-- lealfet heat -->
+<script src="js/leaflet-heat.js"></script>
 
 	<!-- Easy button leaflet -->
-	<link rel="stylesheet" href="style/easy-button.css">
+	<link type="text/css" rel="stylesheet" href="style/easy-button.css">
 	<script src="js/easy-button.js"></script>
 
 
    <!-- lealfet.contextmenu -->
-	<link rel="stylesheet" href="style/leaflet.contextmenu.css" >
+	<link type="text/css" rel="stylesheet" href="style/leaflet.contextmenu.css" >
 	<script src="js/leaflet.contextmenu.js"></script>
 
 	<!-- Leaflet.Draw  (is min)-->
-	<link rel="stylesheet" href="style/leaflet.draw.css">
+	<link type="text/css" rel="stylesheet" href="style/leaflet.draw.css">
 	<script src="js/leaflet.draw.js"></script>
 
 	<!-- D3 (needded for leaflet.freeDraw) -->
@@ -73,7 +81,7 @@
 	<link rel="stylesheet" href="style/css/bootstrap-theme.min.css"> -->
 
 	<!-- font awesome icons-->
-	<link rel="stylesheet" href="style/font-awesome-4.5.0/css/font-awesome.min.css">
+	<link type="text/css" rel="stylesheet" href="style/font-awesome-4.5.0/css/font-awesome.min.css">
 
 
 <script src="js/papaparse.min.js"></script>
@@ -173,6 +181,8 @@ svg.tracer {
 
 
 <body>
+	<!-- progress container -->
+
 	<div id="sidebar" class="panel main-sidebar ">
 
 		<nav class="navbar navbar-default  head-sidebar " >
@@ -198,10 +208,14 @@ svg.tracer {
 
 	</div>
 
+
+
   </div><!-- /.container-fluid -->
 </nav>
 
 <div class="sidebar-body">
+
+
 
 	<!-- Settings -->
 	<div class="element-sidebar-inactive"  id="settingBody" >
@@ -264,7 +278,10 @@ svg.tracer {
 
 	<!-- Map  !-->
 	<div id="map" style="z-index:0; width:100%; height:100%; position:absolute;">
-
+		<!--progress container -->
+		<div id="progress-container" style="position:absolute;
+		z-index:1; right:0px; top: 0px; width: 250px;padding:20px;"> </div>
+    <!--  alerts container -->
 		<div class="col-lg-10" id="alerts-container" style="position:absolute;
 		z-index:1; right:0px; bottom: 0px; width: 250px;padding:20px;">
 			<div class="alert alert-success fade in"  id="alert-bottom">
@@ -351,6 +368,7 @@ svg.tracer {
         <h3> Welcome to brainMapSurf </h3>
 				<h4 class="alert-info">press F11 for fullscreen experience  </h4>
 				<h4 class="alert-success">NEW Use now right click on regions and map for quick access to actions  </h4>
+				<h4 class="alert-success"> New right-click menu actions : Populate and HeatMaps, try it  </h4>
 				<h4> You can use the menu in the lef up corner for selecting differents maps</h4>
 				<h4> To change settings press <i class="glyphicon glyphicon-cog"></i></h4>
 				<h4> Draw polygonal areas with the drawing tools in the left bottom corner</h4>
@@ -414,7 +432,22 @@ svg.tracer {
 			text: "Upload JSON",
 			iconCls: "fa fa-upload",
 			callback: function(){brainmap.uplaodJSON();}
-		}, '-', {
+		},
+		{
+			text: "Populate here",
+			iconCls: "fa fa-tree",
+			callback: function(latlng){brainmap.addMarkersOf(latlng);}
+		},
+		{
+			text: "HeatMaps here",
+			iconCls: "fa fa-fire",
+			callback: function(latlng){brainmap.heatMapHere(latlng);}
+		},
+		{
+			text: "HeatMaps All",
+			iconCls: "fa fa-fire",
+			callback: function(latlng){brainmap.heatMapAll();}
+		},'-', {
         text: 'Zoom in',
         iconCls: "fa fa-plus-square",
         callback: zoomIn

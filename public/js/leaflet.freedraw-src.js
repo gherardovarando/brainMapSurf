@@ -233,7 +233,12 @@
                 }
 
                 // Physically remove the edge from the DOM.
+                if (this.drawnItems){
+                  this.drawnItems.removeLayer(edge);
+                }
+                else{
                 this.map.removeLayer(edge);
+              }
 
             }.bind(this));
 
@@ -977,6 +982,7 @@
          */
         mergePolygons: function mergePolygons() {
 
+
             /**
              * @method mergePass
              * @return {void}
@@ -1032,8 +1038,13 @@
          */
         destroyPolygon: function destroyPolygon(polygon) {
 
-            this.map.removeLayer(polygon);
 
+          if (this.drawnItems){
+            this.drawnItems.removeLayer(polygon);
+          }
+          else{
+            this.map.removeLayer(polygon);
+          }
             // Remove from the polygons array.
             var index = this.polygons.indexOf(polygon);
             this.polygons.splice(index, 1);
@@ -1069,7 +1080,12 @@
                 }
 
                 // Physically remove the edge from the DOM.
+                if (this.drawnItems){
+                  this.drawnItems.removeLayer(edge);
+                }
+                else{
                 this.map.removeLayer(edge);
+              }
 
             }.bind(this));
 
@@ -1277,9 +1293,13 @@
                     }),
                     latLng = this.map.layerPointToLatLng(point);
 
+                var temp=this.map;
+                if (this.drawnItems){
+                  temp=this.drawnItems;
+                }
                 edge = L.marker(latLng, {
                     icon: edge
-                }).addTo(this.map);
+                }).addTo(temp);
 
                 // Setup the freedraw object with the meta data.
                 edge._freedraw = {
@@ -1450,7 +1470,7 @@
 
                         // Recreate the polygon boundaries because we may have straight edges now.
                         this.trimPolygonEdges(this.movingEdge._freedraw.polygon);
-                        this.mergePolygons();
+                        //this.mergePolygons();
                         this.movingEdge = null;
 
                         if (this.options.memoriseEachEdge) {

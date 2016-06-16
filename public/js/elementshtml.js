@@ -319,7 +319,7 @@ function addProgressBar(id){
   cont.setAttribute("class","progress");
   cont.setAttribute("id","parent"+id);
   var bar=document.createElement("DIV");
-  bar.setAttribute("id",id);
+  bar.setAttribute("id","progress-bar"+id);
   cont.appendChild(bar);
   bar.style["min-width"]= "2em";
   bar.setAttribute("class","progress-bar");
@@ -329,14 +329,14 @@ function addProgressBar(id){
   bar.setAttribute("aria-valuemax","100");
   bar.style.width="0%";
   bar.innerHTML="0%";
-  document.getElementById("progress").appendChild(cont);
+  document.getElementById("progress-container").appendChild(cont);
 }
 }
 
 function updateProgressBar(id,value){
   if (document){
   var temp= ""+value.toPrecision(3)+"%";
-  var bar=document.getElementById(id);
+  var bar=document.getElementById("progress-bar"+id);
   bar.style.width=temp;
   bar.setAttribute("aria-valuenow",value);
   bar.innerHTML=temp;
@@ -345,7 +345,7 @@ function updateProgressBar(id,value){
 
 function stepProgressBar(id,value){
   if (document){
-  var bar=document.getElementById(id);
+  var bar=document.getElementById("progress-bar"+id);
   var temp=parseInt(bar["aria-valuenow"]);
   temp=temp+value;
   bar.style.width=""+temp+"%";
@@ -358,8 +358,8 @@ function closeProgressBar(id){
   if (document){
     var par=document.getElementById("parent"+id);
       if (par){
-          par.removeChild(document.getElementById(id));
-          document.getElementById("progress").removeChild(par);
+          par.removeChild(document.getElementById("progress-bar"+id));
+          document.getElementById("progress-container").removeChild(par);
       }
 }
 }

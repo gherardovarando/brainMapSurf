@@ -79,7 +79,7 @@ function readHoles(polygon,reference,cl,errCl,self){
 	} );}
 
 
-function readPoints(polygon,reference,cl,errCl,self){
+function readPoints(polygon,reference,cl,errCl,self,step){
  var numberPoint=0;
  var url=self.pointsUrlTemplate.replace("{x}",reference.col);
  url=url.replace("{y}",reference.row);
@@ -96,18 +96,24 @@ function readPoints(polygon,reference,cl,errCl,self){
   dynamicTyping: true,
   fastMode: true,
   step:  function(results, parser) {
-		window.alert(results[0]);
+		if (polygon){
    if (pointinpolygon(project([results.data[0][0],results.data[0][1]]),polygon)&&
        (!self.unbiasedDensity || results.data[0][3]==0 || results.data[0][3]==null ) ) {
 	  numberPoint=numberPoint+1;
-   }
+	}
+  }
+	else{
+		numberPoint=numberPoint+1;
+		step(project([results.data[0][0],results.data[0][1]]),self,numberPoint);
+	}
+
   },
   complete: function(results, file){
-   	window.alert("complete "+url+" \n" +"points: "+ numberPoint);
+   //window.alert("complete "+url+" \n" +"points: "+ numberPoint);
    	if (cl) {cl(numberPoint);}
   },
   error: function(error,file){
-		window.alert("error "+url);
+		//window.alert("error "+url);
    if (errCl){errCl();}
    }
   } );
