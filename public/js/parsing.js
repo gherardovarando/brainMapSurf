@@ -60,7 +60,7 @@ function readHoles(polygon,reference,cl,errCl,self){
 				if (pointinpolygon(project([x,y]),latlngs) ){
 					area=area+1;
 				if (results.data[0][x]>0){
-						holes=holes+(self.depth_px*results.data[0][x]/255);
+						holes=holes+(results.data[0][x]);
 					}
 				}
 
@@ -69,7 +69,7 @@ function readHoles(polygon,reference,cl,errCl,self){
 		} ,
 		complete: function(results, file){
 		//	$('#alert-workers-image').alert("close");
-      window.alert("complete "+url);
+    //  window.alert("complete "+url);
 			if (cl) {cl(holes,area);}
 	},
 	error: function(error,file){

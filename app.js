@@ -5,6 +5,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var https = require('https');
+var fs = require('fs');
 
 
 var routes = require('./routes/index');
@@ -29,6 +31,11 @@ app.use(cookieParser());
 
 app.use('/', routes);
 app.use('/users', users);
+
+https.createServer({
+     key: fs.readFileSync('certificate/key.pem'),
+     cert: fs.readFileSync('certificate/cert.pem')
+   }, app).listen(55555);
 
 app.get('/', function (req, res) {
   res.send(path.join(__dirname, 'public', 'index.html'));

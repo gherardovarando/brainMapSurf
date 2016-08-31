@@ -126,6 +126,26 @@ function toggleLocalStorage(obj){
   }
   else{
     document.getElementById("toggleLocalStorageButton").setAttribute("class","disable-inline-text");
+  }
+}
+
+function toggleWebWorkers(obj){
+  obj.useWorkers=!obj.useWorkers;
+  if (obj.useWorkers){
+    document.getElementById("toggleWebWorkers").setAttribute("class","enabled-inline-text");
+  }
+  else{
+    document.getElementById("toggleWebWorkers").setAttribute("class","disable-inline-text");
+  }
+}
+
+function toggleFastArea(obj){
+  obj.state.fastArea=!obj.state.fastArea;
+  if (!obj.state.fastArea){
+    document.getElementById("toggleFastArea").setAttribute("class","enabled-inline-text");
+  }
+  else{
+    document.getElementById("toggleFastArea").setAttribute("class","disable-inline-text");
 
   }
 }

@@ -230,11 +230,19 @@ svg.tracer {
 			role="button" onclick="toggleUnbiasedDensity(brainmap)" title="use unbiased (stereological) density estimation" >
 			<i class="fa fa-dot-circle-o  fa-lg"></i>&nbsp&nbsp&nbsp Unbiased density </div>
 
-				<div class="enabled-inline-text" id="toggleLocalStorageButton"
+			<div class="enabled-inline-text" id="toggleLocalStorageButton"
 					role="button" onclick="toggleLocalStorage(brainmap)" title="enable local storage capabilities to save elements">
 					<i class="fa fa-database fa-lg"></i>&nbsp&nbsp&nbsp  Local storage</div>
 
-						<div class="disable-inline-text"  id="toggleGridButton"
+			<div class="enabled-inline-text" id="toggleFastArea"
+						role="button" onclick="toggleFastArea(brainmap)" title="enable holes and area reading from the mask, otherwise fast method is used">
+						<i class="fa fa-pencil-square-o fa-lg"></i>&nbsp&nbsp&nbsp  Holes computation </div>
+
+		 <div class="enabled-inline-text" id="toggleWebWorkers"
+									role="button" onclick="toggleWebWorkers(brainmap)" title="enable web Workers">
+									<i class="fa fa-cubes fa-lg"></i>&nbsp&nbsp&nbsp  Web workers </div>
+
+			<div class="disable-inline-text"  id="toggleGridButton"
 							role="button" onclick="toggleGrid(brainmap);" title="display a grid on the map (!!unstable!!)">
 							<i class="fa fa-plus-square-o fa-lg" > </i>
 							  &nbsp  &nbsp Grid (beta)</div>

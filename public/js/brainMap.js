@@ -35,8 +35,8 @@ function pointinpolygon (point, polygon) {
 
 
 
-// area of polygon, this function is not used, instead the area is computed using the
-// holes mask, for every pixel we check if it is inside the polygon or not
+// area of polygon, this function is used in the fast setting, in the slow setting,
+// instead the area is computed using the holes mask
    // code from http://www.mathopenref.com/coordpolygonarea2.html
    // original from http://alienryderflex.com/polygon_area/
    //  Public-domain function by Darel Rex Finley, 2006.
@@ -83,6 +83,10 @@ function pointinpolygon (point, polygon) {
     this.map = L.map('map',{minZoom:0,  crs: L.CRS.Simple, maxBounds: [[60,-60],
       [-280,280]], fullscreenControl: false }).setView([-100,100],1);
   }
+  this.state={configError:false, unClickable:true, computePolygon:true,
+    showGrid:false, unbiasedDensity:true, fastArea: false};
+  this.localStorage=false;
+  this.useWorkers=true;
 
   //initialize empty/standard/basic configurations, this configuration change with baseMap change
   this.initialiseEmptyConfig=function(){
@@ -106,16 +110,12 @@ function pointinpolygon (point, polygon) {
   this.px2calAreaFactor=1;
   this.px2calVolumeFactor=1;
   this.calVolumeVoxel=1;
-  this.state={configError:false, unClickable:true, computePolygon:true,
-    showGrid:false, unbiasedDensity:true};
-  this.localStorage=false;
-  this.useWorkers=true;
 }
 
 
 
 // initialise the layer to store the drawn items
-//requrie leaflet.draw
+// requrie leaflet.draw
   this.initialiseDrawnItems=function(){
     var self=this;
     var drawnItems = new L.FeatureGroup(); //where items are stored
@@ -251,22 +251,22 @@ this.initialiseFreeDrawControls=function(){
 
  // projections from original calibrations  -> map (256 tiles dim)
   this.project_cal=function(point){
-    point[0]=point[0]*256/this.width_cal;
-    point[1]=point[1]*256/this.height_cal;
+    point[0]=point[0]*256/this.dim_cal;
+    point[1]=point[1]*256/this.dim_cal;
     return(point);
   }
 
 //projections from original pixels -> map (256 tile dim)
   this.project_px=function(point){
-  var x=point[0]*256/this.width_px;
-  var y=point[1]*256/this.height_px;
+  var x=point[0]*256/this.dim_px;
+  var y=point[1]*256/this.dim_px;
     return([x,y]);
   }
 
 // inverse of project_px
   this.inverseProject_px=function(point){
-    var x=point[0]*this.width_px/256;
-    var y=point[1]*this.height_px/256;
+    var x=point[0]*this.dim_px/256;
+    var y=point[1]*this.dim_px/256;
     return([x,y]);
   }
 
@@ -638,6 +638,7 @@ this.uplaodJSON = function(){
           holesUrlTemplate: self.holesUrlTemplate,
           pointsUrlTemplate: self.pointsUrlTemplate,
           unbiasedDensity:  self.state.unbiasedDensity,
+          fastArea: self.state.fastArea,
           depth_px: self.depth_px
         };
         var wk=new Worker("js/workerParsing.js");
@@ -646,6 +647,9 @@ this.uplaodJSON = function(){
           polygon.points=temp.points;
           polygon.holes_vx=temp.holes_vx;
           polygon.area_px=temp.area_px;
+          if (self.state.fastArea){
+            polygon.area_px.push(polygonArea(polygon.getLatLngs())*self.scale_px*self.scale_px);
+          }
           self.showInfoPolygon(polygon);
           badgeUp("region-badge");
           addAlert("alert-worker","alert-success",
@@ -692,8 +696,15 @@ this.uplaodJSON = function(){
       addProgressBar("comp");
       for (var tt=0;tt<references.length;tt++){
         self.state.unClikable=true;
-        readHoles(polygon,references[tt],funH,error,self);
+        if (self.state.fastArea){
+          l=l-1;
+          updateProgressBar("comp",100*(tot-l)/tot);
+        }
+        else{readHoles(polygon,references[tt],funH,error,self);}
         readPoints(latlngs,references[tt],funP,error,self);
+      }
+      if (self.state.fastArea){
+        polygon.area_px.push(polygonArea(polygon.getLatLngs())*self.scale_px*self.scale_px);
       }
     }
     }
@@ -739,6 +750,9 @@ this.uplaodJSON = function(){
        this.showInfoPolygon(polygon);
       }
 
+
+
+
     polygon.bindContextMenu({
     contextmenu: true,
     contextmenuWidth: 140,
@@ -776,6 +790,14 @@ function onClickPolygon(e){
 };
     polygon.on("click",onClickPolygon);
 
+
+
+//define the hoover function
+function onHoover(e){
+
+}
+
+polygon.on("mouseover", onHoover)
 
    }
 

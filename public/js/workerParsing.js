@@ -47,7 +47,7 @@ function readHoles(latlngs,reference,cl,errCl,holesUrlTemplate,scale_px,depth_px
 				if (pointinpolygon(project([x,y]),latlngs) ){
 					area=area+1;
 				if (results.data[0][x]>0){
-						holes=holes+(depth_px*results.data[0][x]/255);
+						holes=holes+(results.data[0][x]);
 					}
 				}
 
@@ -109,11 +109,12 @@ var onmessage = function(e) {
 	var latlngs=input.latlngs;
 	var holesUrlTemplate=input.holesUrlTemplate;
 	var pointsUrlTemplate=input.pointsUrlTemplate;
+  var fastArea = input.fastArea;
 	var scale_px=input.scale_px;
   var unbiased=input.unbiasedDensity;
   var depth_px=input.depth_px;
   points=[0];
-	area_px=[0];
+  area_px=[0];
 	holes_vx=[0];
 	var funH=function(holes,area){
 		l=l-1;
@@ -157,7 +158,9 @@ var onmessage = function(e) {
 	}
 	}
 	for (var tt=0;tt<references.length;tt++){
-		readHoles(latlngs,references[tt],funH,error,holesUrlTemplate,scale_px,depth_px);
+    if (fastArea){
+    l=l-1;}
+    else{readHoles(latlngs,references[tt],funH,error,holesUrlTemplate,scale_px,depth_px);}
 		readPoints(latlngs,references[tt],funP,error,pointsUrlTemplate,scale_px,unbiased);
 	}
 
