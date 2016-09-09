@@ -451,11 +451,11 @@ svg.tracer {
 			iconCls: "fa fa-fire",
 			callback: function(latlng){brainmap.heatMapHere(latlng);}
 		},
-		{
+		/*{
 			text: "HeatMaps All",
 			iconCls: "fa fa-fire",
 			callback: function(latlng){brainmap.heatMapAll();}
-		},'-', {
+		},*/'-', {
         text: 'Zoom in',
         iconCls: "fa fa-plus-square",
         callback: zoomIn
@@ -504,7 +504,6 @@ svg.tracer {
 
 	$('#welcomModal').modal('toggle');
 	readMapList();
-  changeMap("HCID7_Grey");
   //toggleAlert(brainmap);
   setTimeout(function(){
 		localStorageCheck(2000);},2500)

@@ -98,7 +98,7 @@ function readPoints(polygon,reference,cl,errCl,self,step){
   step:  function(results, parser) {
 		if (polygon){
    if (pointinpolygon(project([results.data[0][0],results.data[0][1]]),polygon)&&
-       (!self.unbiasedDensity || results.data[0][3]==0 || results.data[0][3]==null ) ) {
+       (!self.state.unbiasedDensity || results.data[0][3]==0 || results.data[0][3]==null ) ) {
 	  numberPoint=numberPoint+1;
 	}
   }
