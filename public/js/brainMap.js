@@ -56,7 +56,6 @@ function pointinpolygon (point, polygon) {
 
 
 // brainMap creator
-// brainMap is a
  function brainMap(name,map,sidebar){
 
   // valid field for the configuration files, just thhose field will be read
@@ -631,6 +630,9 @@ this.uplaodJSON = function(){
       var latlngs=polygon.getLatLngs();
 
       if (window.Worker && this.useWorkers){
+        //compute using workerParsing
+
+        //define the input to pass to the worker
         var input={
           latlngs: latlngs,
           references: references,
@@ -641,7 +643,11 @@ this.uplaodJSON = function(){
           fastArea: self.state.fastArea,
           depth_px: self.depth_px
         };
+
+        //set worker
         var wk=new Worker("js/workerParsing.js");
+
+        //define worker onmessage function
         wk.onmessage=function(e){
           var temp=JSON.parse(e.data);
           polygon.points=temp.points;
@@ -658,9 +664,15 @@ this.uplaodJSON = function(){
             $('#alert-worker').alert("close");
           }, 2000)
         }
+
+        //pass input to worker
         wk.postMessage(JSON.stringify(input));
       }
       else{
+
+        //compute without worker
+
+        //define hole callback function
         var funH=function(holes,area){
           l=l-1;
           updateProgressBar("comp",100*(tot-l)/tot);
@@ -672,6 +684,8 @@ this.uplaodJSON = function(){
             self.showInfoPolygon(polygon);
                   }
         }
+
+        //define point callback function
         var funP=function(points){
           l=l-1;
           updateProgressBar("comp",100*(tot-l)/tot);
@@ -682,6 +696,8 @@ this.uplaodJSON = function(){
             self.showInfoPolygon(polygon);
           }
         }
+
+        //define error function
         var error=function(){
           l=l-1;
           if (l>0){
@@ -693,17 +709,25 @@ this.uplaodJSON = function(){
             self.showInfoPolygon(polygon);
           }
         }
+
+      //add progress bar
       addProgressBar("comp");
+
+      //iterate on every stack to process
       for (var tt=0;tt<references.length;tt++){
+        //avoid events on map
         self.state.unClikable=true;
         if (self.state.fastArea){
+          //compute area analytically
           l=l-1;
           updateProgressBar("comp",100*(tot-l)/tot);
         }
-        else{readHoles(polygon,references[tt],funH,error,self);}
+        else{readHoles(polygon,references[tt],funH,error,self);} //compute area and holes by holes mask
+        // read points
         readPoints(latlngs,references[tt],funP,error,self);
       }
       if (self.state.fastArea){
+        //scale area to real dimensions
         polygon.area_px.push(polygonArea(polygon.getLatLngs())*self.scale_px*self.scale_px);
       }
     }
@@ -714,7 +738,7 @@ this.uplaodJSON = function(){
 
 
 
-
+   //function that add the polygon to the brainmap object
    this.addPolygon=function(polygon,notcompute){
     var self=this;
 
@@ -725,6 +749,7 @@ this.uplaodJSON = function(){
     //initialise empty statistics
     polygon.points=[null];
     polygon.area_px=[null];
+
     //compute the area with the formula (not always correct)
     polygon.areaEasy=polygonArea(polygon.getLatLngs())*self.scale_px*self.scale_px;
     polygon.holes_vx=[null];
@@ -742,7 +767,7 @@ this.uplaodJSON = function(){
 
     if (!notcompute && this.state.computePolygon){
       //compute statistics area, holes and points
-    this.computeDensity(polygon);
+      this.computeDensity(polygon);
      }
      else{
        //generate the modal anyway
@@ -752,7 +777,7 @@ this.uplaodJSON = function(){
 
 
 
-
+    //add polygon context menu
     polygon.bindContextMenu({
     contextmenu: true,
     contextmenuWidth: 140,

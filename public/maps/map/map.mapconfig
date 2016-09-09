@@ -1,2 +1,2 @@
 name,tileDim,maxZoom,dim_px,depth_px,scale_px,dim_cal,depth_cal,scale_cal,unit_cal,author,reference,url,date,note
-map,256,1,1000,1,3.0,1000.0,1.0,3.90625,pixel,unknow,none,none,Fri Sep 09 12:42:13 CEST 2016,none
+map,256,1,1000,1,3.0,1000.0,1.0,3.90625,pixel,Gherardo Varando,none,http://cig.fi.upm.es,Fri Sep 09 12:42:13 CEST 2016,none
