@@ -492,7 +492,7 @@ svg.tracer {
     fun=function(info){brainmap.autobuild(info); warningNote(info.note)}
 		errFun=function(){brainmap.autobuild(); configError();}
 		readMapConfig(brainmap.guessConfigUrl(),fun,errFun);
-   if (name.length>15){
+   if (name.length>50){
 		var n=name.slice(0,50)+"...";
 	}
 	else{
