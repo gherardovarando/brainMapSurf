@@ -425,7 +425,7 @@ alert.appendChild(body);
   if (document){
 	var addEntry=function(el){
 		var nodeLink = document.createElement("A");
-		nodeLink.appendChild(document.createTextNode(el.slice(0,15)));
+		nodeLink.appendChild(document.createTextNode(el.slice(0,15)+"..."));
 		var role = document.createAttribute("role");
 		var href = document.createAttribute("href");
 		var action = document.createAttribute("onclick");
