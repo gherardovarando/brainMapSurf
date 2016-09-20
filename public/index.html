@@ -376,8 +376,8 @@ svg.tracer {
         <h3> Welcome to brainMapSurf </h3>
 				<h4 class="alert-info">press F11 for fullscreen experience  </h4>
 				<h4 class="alert-danger">Holes computation is disabled for performance reason, you have to select it in setting</h4>
-				<h4 class="alert-success">NEW Use now right click on regions and map for quick access to actions  </h4>
-				<h4 class="alert-success"> New right-click menu actions : Populate and HeatMaps, try it  </h4>
+				<h4 class="alert-success">NEW Use right click on regions and map for quick access to actions  </h4>
+				<!-- <h4 class="alert-success"> New right-click menu actions : Populate and HeatMaps, try it  </h4> -->
 				<h4> You can use the menu in the lef up corner for selecting differents maps</h4>
 				<h4> To change settings press <i class="glyphicon glyphicon-cog"></i></h4>
 				<h4> Draw polygonal areas with the drawing tools in the left bottom corner</h4>
@@ -494,8 +494,8 @@ svg.tracer {
     fun=function(info){brainmap.autobuild(info); warningNote(info.note)}
 		errFun=function(){brainmap.autobuild(); configError();}
 		readMapConfig(brainmap.guessConfigUrl(),fun,errFun);
-   if (name.length>50){
-		var n=name.slice(0,50)+"...";
+   if (name.length>15){
+		var n=name.slice(0,15)+"...";
 	}
 	else{
 		var n=name;

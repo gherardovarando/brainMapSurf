@@ -425,7 +425,7 @@ alert.appendChild(body);
   if (document){
 	var addEntry=function(el){
 		var nodeLink = document.createElement("A");
-		nodeLink.appendChild(document.createTextNode(el.slice(0,50)));
+		nodeLink.appendChild(document.createTextNode(el.slice(0,15)));
 		var role = document.createAttribute("role");
 		var href = document.createAttribute("href");
 		var action = document.createAttribute("onclick");
@@ -438,6 +438,7 @@ alert.appendChild(body);
 		nodeLink.setAttributeNode(action);
 		var nodeEl = document.createElement("LI");
 		nodeEl.appendChild(nodeLink);
+    nodeLink.setAttribute("title", el);
     nodeLink.setAttribute("class","list-group-item");
 		document.getElementById("map_chooser").appendChild(nodeLink);
 	}
