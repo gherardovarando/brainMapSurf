@@ -375,6 +375,7 @@ svg.tracer {
 				<div class="modal-body">
         <h3> Welcome to brainMapSurf </h3>
 				<h4 class="alert-info">press F11 for fullscreen experience  </h4>
+				<h4 class="alert-danger">Holes computation is disabled for performance reason, you have to select it in setting</h4>
 				<h4 class="alert-success">NEW Use now right click on regions and map for quick access to actions  </h4>
 				<h4 class="alert-success"> New right-click menu actions : Populate and HeatMaps, try it  </h4>
 				<h4> You can use the menu in the lef up corner for selecting differents maps</h4>
@@ -481,6 +482,7 @@ svg.tracer {
 
   var brainmap=new brainMap("map",map,sidebar);
 
+  toggleFastArea(brainmap); // set the fastArea to true, new setting
 
 	changeMap=function(name){
 		sidebar.minimize();
