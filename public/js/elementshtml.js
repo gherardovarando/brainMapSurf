@@ -438,7 +438,7 @@ alert.appendChild(body);
 		nodeLink.setAttributeNode(action);
 		var nodeEl = document.createElement("LI");
 		nodeEl.appendChild(nodeLink);
-  nodeLink.setAttribute("class","list-group-item");
+    nodeLink.setAttribute("class","list-group-item");
 		document.getElementById("map_chooser").appendChild(nodeLink);
 	}
 	lis.map(addEntry);

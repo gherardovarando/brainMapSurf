@@ -528,7 +528,13 @@ this.uplaodJSON = function(){
 
      var holesT=document.createElement("P");
      holesT.className="list-group-item-text";
+     if (polygon.fastArea){
+       holesT.style = "color: red ;"
+       holesT.innerHTML = "Holes not computed by user choice, holes values set to 0";
+     }
+     else{
      holesT.innerHTML="Holes: " + holescal.toFixed(2) + volunit;
+     }
      var neuropilT=document.createElement("P");
      neuropilT.className="list-group-item-text";
      neuropilT.innerHTML="Neuropil: " + (volcal-holescal).toFixed(2) + volunit;
@@ -567,7 +573,7 @@ this.uplaodJSON = function(){
      dow.innerHTML="download JSON";
      contDown.appendChild(dow);
      var containerLink=document.createElement("DIV");
-     containerLink.setAttribute("style","max-height: 150px; overflow-y: auto;");
+     containerLink.style="max-height: 150px; overflow-y: auto;";
      contDown.appendChild(containerLink);
      var ref=this.getReferences(polygon.getBounds());
 
@@ -653,6 +659,7 @@ this.uplaodJSON = function(){
           polygon.points=temp.points;
           polygon.holes_vx=temp.holes_vx;
           polygon.area_px=temp.area_px;
+          polygon.fastArea = self.state.fastArea;
           if (self.state.fastArea){
             polygon.area_px.push(polygonArea(polygon.getLatLngs())*self.scale_px*self.scale_px);
           }
