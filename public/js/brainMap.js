@@ -1,4 +1,22 @@
+
 "use strict";
+/**
+ * @author : gherardo varando (gherardo.varando@gmail.com)
+ * @license: GPL v3
+ *     This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 //leaflet is required
 //papaparse is required
@@ -11,7 +29,8 @@ function getSum(total, num) {
 
 // check if point is inside polygon
 // point is a 2 dimensional vector
-// polygon is a vector of latlngs components, as returned by leaflet .getLatLngs method
+// polygon is a vector of latlngs components, as returned by leaflet
+// .getLatLngs method
 function pointinpolygon(point, polygon) {
     // ray-casting algorithm based on
     // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
@@ -42,8 +61,8 @@ function pointinpolygon(point, polygon) {
 
 
 /**
- * area of polygon, this function is used in the fast setting, in the slow setting,
- * instead the area is computed using the holes mask
+ * area of polygon, this function is used in the fast setting, in the slow
+ * setting, instead the area is computed using the holes mask
  * code from http://www.mathopenref.com/coordpolygonarea2.html
  * original from http://alienryderflex.com/polygon_area/
  *  Public-domain function by Darel Rex Finley, 2006.
@@ -59,7 +78,8 @@ function polygonArea(coords) {
     var j = numPoints - 1; // The last vertex is the 'previous' one to the first
 
     for (var i = 0; i < numPoints; i++) {
-        area = area + (coords[j][0] + coords[i][0]) * (coords[j][1] - coords[i][1]);
+        area = area + (coords[j][0] + coords[i][0]) * (coords[j][1] -
+            coords[i][1]);
         j = i; //j is previous vertex to i
     }
     return Math.abs(area / 2);
@@ -75,15 +95,18 @@ function polygonArea(coords) {
  */
 function brainMap(name, map, sidebar) {
 
-/**
- *  valid field for the configuration files, just thise field will be read just
- *  add a string in this vector and the corresponding field will be read from
- *  the configuration file of the map
- * @type {Array}
- */
-    this.validConfigFields = ["name", "tileDim", "maxZoom", "dim_px", "scale_px",
-        "depth_px", "dim_cal", "depth_cal", "scale_cal", "unit_cal", "author", "reference",
-        "url", "date", "tilesUrlTemplate", "note", "pointsUrlTemplate", "holesUrlTemplate",
+    /**
+     *  valid field for the configuration files, just thise field will be read
+     *  just add a string in this vector and the corresponding field will
+     *  be read from the configuration file of the map
+     * @type {Array}
+     */
+    this.validConfigFields = ["name", "tileDim", "maxZoom", "dim_px",
+        "scale_px",
+        "depth_px", "dim_cal", "depth_cal", "scale_cal", "unit_cal", "author",
+        "reference",
+        "url", "date", "tilesUrlTemplate", "note", "pointsUrlTemplate",
+        "holesUrlTemplate",
         "holesMapUrlTemplate", "objectsUrlTemplate", "X_0", "Y_0"
     ];
 
@@ -130,7 +153,8 @@ function brainMap(name, map, sidebar) {
         computePolygon: true,
         showGrid: false,
         unbiasedDensity: true,
-        fastArea: false
+        fastArea: false,
+        expertMode: false
     };
 
     /**
@@ -142,7 +166,7 @@ function brainMap(name, map, sidebar) {
 
     /**
      * Initialise a standard configuration of the brainMap object with all
-     * the basic information 
+     * the basic information
      */
     this.initialiseEmptyConfig = function() {
         this.name = "map";
@@ -166,6 +190,9 @@ function brainMap(name, map, sidebar) {
         this.px2calVolumeFactor = 1;
         this.calVolumeVoxel = 1;
     }
+
+
+
 
 
 
@@ -242,6 +269,7 @@ function brainMap(name, map, sidebar) {
             }
             layers.eachLayer(function(layer) {
                 self.computeDensity(layer);
+
             });
         });
 
@@ -353,8 +381,6 @@ function brainMap(name, map, sidebar) {
     this.getReferences = function(bounds) {
         var self = this;
         if (bounds) {
-
-
             var x0 = 0;
             var y0 = 0;
             var temp = [];
@@ -531,6 +557,9 @@ function brainMap(name, map, sidebar) {
         reader.onloadend = function() {
             var jsonString = reader.result;
             var pol = JSON.parse(jsonString);
+            if (!pol.mapname) {
+
+            }
             self.drawnItems.addLayer(L.polygon(pol.latlngs, {
                 color: "#802000"
             }));
@@ -606,7 +635,8 @@ function brainMap(name, map, sidebar) {
             }
             var neuropilT = document.createElement("P");
             neuropilT.className = "list-group-item-text";
-            neuropilT.innerHTML = "Neuropil: " + (volcal - holescal).toFixed(2) + volunit;
+            neuropilT.innerHTML = "Neuropil: " + (volcal - holescal).toFixed(2) +
+                volunit;
 
             var contVolT = document.createElement("LI");
             contVolT.className = "list-group-item";
@@ -617,10 +647,12 @@ function brainMap(name, map, sidebar) {
             //density
             var densityT = document.createElement("LI");
             densityT.className = "list-group-item";
-            densityT.innerHTML = "Density of puncta: " + densityTot.toFixed(2) + "  puncta /" + volunit;
+            densityT.innerHTML = "Density of puncta: " + densityTot.toFixed(2) +
+                "  puncta /" + volunit;
             var densityTH = document.createElement("LI");
             densityTH.className = "list-group-item";
-            densityTH.innerHTML = "Denisty of puncta in neuropil: " + densityH.toFixed(2) + "  puncta /" + volunit;
+            densityTH.innerHTML = "Denisty of puncta in neuropil: " +
+                densityH.toFixed(2) + "  puncta /" + volunit;
 
             list.appendChild(contVolT);
             list.appendChild(pointT);
@@ -633,7 +665,8 @@ function brainMap(name, map, sidebar) {
                 points: polygon.points,
                 latlngs: polygon.getLatLngs()
             };
-            var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(polygonToDownload));
+            var data = "text/json;charset=utf-8," +
+                encodeURIComponent(JSON.stringify(polygonToDownload));
             var contDown = document.createElement("DIV");
             var dow = document.createElement("A");
             polygon.downloadJSONlink = dow;
@@ -657,9 +690,12 @@ function brainMap(name, map, sidebar) {
                     url = url.replace("{y}", r.row);
 
                     imgDown.setAttribute("href", url);
-                    imgDown.setAttribute("download", "segmented_X" + r.col + "_Y" + r.row + ".tiff");
-                    imgDown.innerHTML = "download " + "segmented_X" + r.col + "_Y" + r.row + ".tiff";
-                    imgDown.setAttribute("download", "segmented_X" + r.col + "_Y" + r.row + ".tiff");
+                    imgDown.setAttribute("download", "segmented_X" +
+                        r.col + "_Y" + r.row + ".tiff");
+                    imgDown.innerHTML = "download " + "segmented_X" +
+                        r.col + "_Y" + r.row + ".tiff";
+                    imgDown.setAttribute("download", "segmented_X" +
+                        r.col + "_Y" + r.row + ".tiff");
                     imgDown.setAttribute("target", "new");
 
                     imgDownCont.appendChild(imgDown);
@@ -690,17 +726,30 @@ function brainMap(name, map, sidebar) {
     }
 
 
+    /**
+     * Compute statistics of the polygon
+     * @param  {[type]} polygon [description]
+     * @return {[type]}         [description]
+     */
     this.computeDensity = function(polygon) {
         var self = this;
-        //get the list of references for points and holes tiles
+
+        /**
+         * get the list of references for points and holes tiles
+         */
         var references = this.getReferences(polygon.getBounds());
         var l = 2 * references.length;
         var tot = l;
 
-        //start spinng icon
+        /**
+         * start spinng icon
+         */
         addPolInfoEl(polygon.bmId, ["computing"], "fa fa-spinner fa-spin");
 
-        //reset statistics to 0
+        /**
+         * reset statistics to 0
+         * @type {Array}
+         */
         polygon.points = [0];
         polygon.area_px = [0];
         polygon.areaEasy = polygonArea(polygon.getLatLngs()) * self.scale_px * self.scale_px;
@@ -708,9 +757,14 @@ function brainMap(name, map, sidebar) {
         var latlngs = polygon.getLatLngs();
 
         if (window.Worker && this.useWorkers) {
-            //compute using workerParsing
+            /**
+             * compute using workerParsing
+             */
 
-            //define the input to pass to the worker
+            /**
+             * define the input to pass to the worker
+             * @type {Object}
+             */
             var input = {
                 latlngs: latlngs,
                 references: references,
@@ -722,10 +776,16 @@ function brainMap(name, map, sidebar) {
                 depth_px: self.depth_px
             };
 
-            //set worker
+            /**
+             * set worker from the workerParsing.js file
+             * @type {Worker}
+             */
             var wk = new Worker("js/workerParsing.js");
 
-            //define worker onmessage function
+            /**
+             * worker onmessage function
+             * @param  {object} e [description]
+             */
             wk.onmessage = function(e) {
                 var temp = JSON.parse(e.data);
                 polygon.points = temp.points;
@@ -744,13 +804,21 @@ function brainMap(name, map, sidebar) {
                 }, 2000)
             }
 
-            //pass input to worker
+            /**
+             * pass input to worker
+             */
             wk.postMessage(JSON.stringify(input));
         } else {
 
-            //compute without worker
+            /**
+             * compute without worker
+             */
 
-            //define hole callback function
+            /**
+             * define hole callback function
+             * @param  {number} holes holes value obtained from mask files
+             * @param  {number} area  area value obtained from mask files
+             */
             var funH = function(holes, area) {
                 l = l - 1;
                 updateProgressBar("comp", 100 * (tot - l) / tot);
@@ -763,7 +831,11 @@ function brainMap(name, map, sidebar) {
                 }
             }
 
-            //define point callback function
+            /**
+             * point callback function
+             * @param  {number} points value of internal points obtained from
+             *                  points files
+             */
             var funP = function(points) {
                 l = l - 1;
                 updateProgressBar("comp", 100 * (tot - l) / tot);
@@ -775,7 +847,9 @@ function brainMap(name, map, sidebar) {
                 }
             }
 
-            //define error function
+            /**
+             * error callback function
+             */
             var error = function() {
                 l = l - 1;
                 if (l > 0) {
@@ -788,15 +862,27 @@ function brainMap(name, map, sidebar) {
                 }
             }
 
-            //add progress bar
+            /**
+             * add progress bar
+             */
             addProgressBar("comp");
 
-            //iterate on every stack to process
+            /**
+             * iterate on every stacks
+             */
             for (var tt = 0; tt < references.length; tt++) {
-                //avoid events on map
+
+                /**
+                 * avoid click events on map
+                 * @type {Boolean} set to true
+                 */
                 self.state.unClikable = true;
+
+                /**
+                 *  if area has to be computed fast, no holes computation
+                 */
                 if (self.state.fastArea) {
-                    //compute area analytically
+                    //increase counter anyway
                     l = l - 1;
                     updateProgressBar("comp", 100 * (tot - l) / tot);
                 } else {
@@ -817,7 +903,11 @@ function brainMap(name, map, sidebar) {
 
 
 
-    //function that add the polygon to the brainmap object
+    /**
+     * add the polygon to the brainmap object
+     * @param {[type]} polygon    polyigon to add to the brainMap object
+     * @param {[type]} notcompute if compute or not the statistcs
+     */
     this.addPolygon = function(polygon, notcompute) {
         var self = this;
 
@@ -901,6 +991,9 @@ function brainMap(name, map, sidebar) {
                 $('#' + e.target.bmId).modal('toggle');
             }
         };
+        /**
+         * add the onClickPolygon callback
+         */
         polygon.on("click", onClickPolygon);
 
 
